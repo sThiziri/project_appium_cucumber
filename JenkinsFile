@@ -2,31 +2,37 @@ pipeline {
     agent {
         docker {
             image 'budtmo/docker-android-x86-11.0'
-            args '--privileged -v /dev/bus/usb:/dev/bus/usb'
+            args '--privileged --device /dev/kvm:/dev/kvm --device /dev/bus/usb:/dev/bus/usb'
         }
     }
     stages {
         stage('Check SDK') {
-      steps {
-        sh 'adb --version'
-        sh 'emulator -list-avds || true'
-      }
-    }
-    stage('Start Emulator') {
-      steps {
-        sh '''
-          emulator -avd Pixel_3 -no-snapshot -noaudio -no-window &
-          adb wait-for-device
-        '''
-      }
-    }
+            steps {
+                echo "Vérification de la présence d'ADB et Emulator..."
+                sh 'which adb || echo "adb non trouvé"'
+                sh 'which emulator || echo "emulator non trouvé"'
+                sh 'adb --version || true'
+                sh 'emulator -list-avds || true'
+            }
+        }
 
-        stage('Run_Test') {
+        stage('Start Emulator') {
+            steps {
+                echo "Démarrage de l’émulateur Android..."
+                sh '''
+                  nohup emulator -avd Pixel_3 -no-snapshot -noaudio -no-window >/dev/null 2>&1 &
+                  adb wait-for-device
+                '''
+            }
+        }
+
+        stage('Run Tests') {
             steps {
                 echo "Exécution des tests Maven..."
                 sh 'mvn clean test'
             }
         }
+
     }
 
     post {
