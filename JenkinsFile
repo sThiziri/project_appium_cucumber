@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Récupération du code source..."
+            }
+        }
+
+        stage('Run_Test') {
+            steps {
+                echo "Exécution des tests Maven..."
+                sh 'mvn clean test'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Publication des rapports..."
+        }
+    }
+}
