@@ -1,8 +1,9 @@
 pipeline {
-    agent any
-    docker {
-      image 'budtmo/docker-android-x86-11.0'
-      args '--privileged -v /dev/bus/usb:/dev/bus/usb'
+    agent {
+        docker {
+            image 'budtmo/docker-android-x86-11.0'
+            args '--privileged -v /dev/bus/usb:/dev/bus/usb'
+        }
     }
     stages {
         stage('Check SDK') {
