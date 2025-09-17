@@ -1,20 +1,24 @@
 pipeline {
     agent any
-
+    docker {
+      image 'budtmo/docker-android-x86-11.0'
+      args '--privileged -v /dev/bus/usb:/dev/bus/usb'
+    }
     stages {
-        stage('Checkout') {
-            steps {
-                echo "Récupération du code source..."
-            }
-        }
-        stage('Start emulator') {
-            steps {
-                sh '''
-                  emulator -avd Pixel_3 -no-snapshot -noaudio -no-window &
-                  adb wait-for-device
-                '''
-            }
-        }
+        stage('Check SDK') {
+      steps {
+        sh 'adb --version'
+        sh 'emulator -list-avds || true'
+      }
+    }
+    stage('Start Emulator') {
+      steps {
+        sh '''
+          emulator -avd Pixel_3 -no-snapshot -noaudio -no-window &
+          adb wait-for-device
+        '''
+      }
+    }
 
         stage('Run_Test') {
             steps {
