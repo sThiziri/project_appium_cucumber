@@ -7,6 +7,14 @@ pipeline {
                 echo "Récupération du code source..."
             }
         }
+        stage('Start emulator') {
+            steps {
+                sh '''
+                  emulator -avd Pixel_3 -no-snapshot -noaudio -no-window &
+                  adb wait-for-device
+                '''
+            }
+        }
 
         stage('Run_Test') {
             steps {
